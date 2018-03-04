@@ -6,11 +6,11 @@ It use unity TreeView control to draw the table, and SerializedObject to handle 
 
 It work on all Monobehaviour subclass and on all ScriptableObject subclass in your project.
 
-#Installation
+# Installation
 
 Copy the ObjectTableWindow.cs in an Editor folder in the project.
 
-#Usage
+# Usage
 
 ![GIF of usage](https://i.imgur.com/NtAasmN.gif)
 
@@ -22,7 +22,7 @@ Some column for type like int/float/string... can be sorted by clicking on them.
 
 Scriptable object will have a **New** button available to create a new instance of that type. The new instance will be placed in the root Assets folder if no folder is picked or in the choosen folder otherwise.
 
-#Limitation
+# Limitation
 
 - Large number of prefab may make the system slow (du to how we find prefab containing the given Monobehaviour subclass). Need more test.
 - Deleting (pressing Delete with row selected) is still a buggy and may requie to close & reopen the window.
