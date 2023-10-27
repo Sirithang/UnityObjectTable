@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using System.Linq;
 
-public class ObjectTable : EditorWindow
+public class Plinth : EditorWindow
 {
     public class TypeInfo
     {
@@ -21,10 +21,10 @@ public class ObjectTable : EditorWindow
     [SerializeField] protected int _selectedIndex = -1;
     [SerializeField] protected string _targetFolderForNewAsset = "";
 
-    [MenuItem("ObjectTable/Open")]
+    [MenuItem("Window/Plinth (Scriptable Object Table)")]
     static void Open()
     {
-        GetWindow<ObjectTable>();
+        GetWindow<Plinth>();
     }
 
     private void OnEnable()
@@ -274,9 +274,9 @@ public class ObjectTable : EditorWindow
 public class DatabaseDisplayer : TreeView
 {
     protected int _freeID = 0;
-    protected ObjectTable.TypeInfo _objectType;
+    protected Plinth.TypeInfo _objectType;
 
-    public DatabaseDisplayer(TreeViewState state, MultiColumnHeader header, ObjectTable.TypeInfo objectType) : base(state, header)
+    public DatabaseDisplayer(TreeViewState state, MultiColumnHeader header, Plinth.TypeInfo objectType) : base(state, header)
     {
         _freeID = 0;
         _objectType = objectType;

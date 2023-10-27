@@ -1,0 +1,16 @@
+{
+  "name": "com.radiatoryang.plinth",
+  "displayName": "Plinth (ScriptableObject table)",
+  "version": "1.0.0",
+  "description": "Editor plugin that lets you edit many Scriptable Objects all at once, like a table / spreadsheet.",
+  "unity": "2020.1",
+  "keywords": [ "scriptable object", "table", "spreadsheet", "tool" ],
+  "documentationUrl": "https://github.com/radiatoryang/plinth",
+  "licensesUrl": "https://github.com/radiatoryang/plinth/LICENSE",
+  "author": {
+    "name": "Robert Yang",
+    "email": "2285943+radiatoryang@users.noreply.github.com",
+    "url": "https://debacle.us"
+  },
+  "type": "tool"
+}
