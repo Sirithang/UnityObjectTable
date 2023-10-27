@@ -21,7 +21,7 @@ public class Plinth : EditorWindow
     [SerializeField] protected int _selectedIndex = -1;
     [SerializeField] protected string _targetFolderForNewAsset = "";
 
-    [MenuItem("Window/Plinth (Scriptable Object Table)")]
+    [MenuItem("Window/Plinth (Object Table)")]
     static void Open()
     {
         GetWindow<Plinth>();
@@ -98,31 +98,35 @@ public class Plinth : EditorWindow
 
         //Count remainingwill count hte m_Script property (the type of script, like the 1st field in the inspector)
         //but we will replace it with the (hidden) propery that is the name, so it even out
-        int propCount = prop.CountRemaining();
+        int propCount = prop.CountRemaining(); // but this is incorrect when there's arrays involved!
 
         prop.Reset();
         prop.Next(true);
         //do it once to "jump over" the script file, we don't want that property.
         prop.NextVisible(false);
 
-        //add name
-        MultiColumnHeaderState.Column[] columns = new MultiColumnHeaderState.Column[propCount];
-        columns[0] = new MultiColumnHeaderState.Column();
-        columns[0].headerContent = new GUIContent("Name");
-        columns[0].width = 64;
+        var columns = new List<MultiColumnHeaderState.Column>();
 
-        for (int i = 1; i < propCount; ++i)
+        // add name
+        var objectColumn = new MultiColumnHeaderState.Column();
+        objectColumn.headerContent = new GUIContent("Object");
+        objectColumn.width = 64;
+        columns.Add(objectColumn);
+
+        while (prop.NextVisible(false))
         {
-            prop.NextVisible(false);
-            columns[i] = new MultiColumnHeaderState.Column();
-            columns[i].allowToggleVisibility = false;
-            columns[i].headerContent = new GUIContent(prop.displayName);
-            columns[i].minWidth = GetPropertyWidthFromType(prop.propertyType);
-            columns[i].width = columns[i].minWidth;
-            columns[i].canSort = CanSort(prop.propertyType);
+            // Debug.Log(prop.name);
+            prop.isExpanded = false;
+            var newColumn = new MultiColumnHeaderState.Column();
+            newColumn.allowToggleVisibility = false;
+            newColumn.headerContent = new GUIContent(prop.displayName);
+            newColumn.minWidth = GetPropertyWidthFromType(prop.propertyType);
+            newColumn.width = newColumn.minWidth;
+            newColumn.canSort = CanSort(prop.propertyType);
+            columns.Add(newColumn);
         }
 
-        MultiColumnHeaderState headerstate = new MultiColumnHeaderState(columns);
+        MultiColumnHeaderState headerstate = new MultiColumnHeaderState(columns.ToArray());
         MultiColumnHeader header = new MultiColumnHeader(headerstate);
 
         _databaseDisplay = new DatabaseDisplayer(state, header, type);
@@ -185,8 +189,8 @@ public class Plinth : EditorWindow
         {
             if (_selectedIndex != -1 && _objectTypeInfos[_selectedIndex].isScriptableObject)
             {
-                controlRect.y += controlRect.height;
-                controlRect.x = 0;
+                // controlRect.y += controlRect.height;
+                controlRect.x = 232;
                 controlRect.width = 64;
 
                 if (GUI.Button(controlRect, "New"))
@@ -258,9 +262,13 @@ public class Plinth : EditorWindow
                 break;
             case SerializedPropertyType.Float:
             case SerializedPropertyType.Integer:
+            case SerializedPropertyType.String:
+            case SerializedPropertyType.Boolean:
                 newSize = 64;
                 break;
+            case SerializedPropertyType.ManagedReference:
             case SerializedPropertyType.ObjectReference:
+            case SerializedPropertyType.Generic:
                 newSize = 128;
                 break;
             default:
@@ -368,12 +376,24 @@ public class DatabaseDisplayer : TreeView
         for (int i = 0; i < args.GetNumVisibleColumns(); ++i)
         {
             Rect r = args.GetCellRect(i);
+            r.height = EditorGUIUtility.singleLineHeight;
             int column = args.GetColumn(i);
             int idx = column;
 
             if (idx == 0)
-            {//we handle the name a bit differently, as any change in the name need to be reflected in the name of the asset. So rename the asset if the name is changed
+            {
+                // add mini object field to inspect easily?
+                const int OBJECT_WIDTH = 32;
+                var fullWidth = r.width;
+                r.width = OBJECT_WIDTH;
+                GUI.enabled = false;
+                EditorGUI.ObjectField(r, item.obj.targetObject, _objectType.type, false);
 
+                GUI.enabled = true;
+                r.width = fullWidth - OBJECT_WIDTH;
+                r.x = OBJECT_WIDTH;
+
+                //we handle the name a bit differently, as any change in the name need to be reflected in the name of the asset. So rename the asset if the name is changed
                 string originalValue;
                 if (_objectType.isScriptableObject)
                     originalValue = item.properties[idx].stringValue;
@@ -393,11 +413,25 @@ public class DatabaseDisplayer : TreeView
             }
             else
             {
-                EditorGUI.PropertyField(r, item.properties[idx], GUIContent.none, false);
+                bool isExpand = item.properties[idx].isExpanded;
+                bool wantsExpand = EditorGUI.PropertyField(r, item.properties[idx], GUIContent.none, true);
+                if (isExpand != wantsExpand) {
+                    RefreshCustomRowHeights();
+                }
             }
         }
 
         item.obj.ApplyModifiedProperties();
+    }
+
+    protected override float GetCustomRowHeight(int row, TreeViewItem treeItem) {
+        float height = 0;
+        var item = (DatabaseViewerItem)treeItem;
+        for(int i=0; i<item.properties.Length; i++) {
+            float newHeight = EditorGUI.GetPropertyHeight(item.properties[i], item.properties[i].isArray && item.properties[i].isExpanded);
+            height = Mathf.Max(height, newHeight);
+        }
+        return height;
     }
 
     protected override TreeViewItem BuildRoot()

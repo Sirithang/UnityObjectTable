@@ -1,10 +1,10 @@
 {
   "name": "com.radiatoryang.plinth",
-  "displayName": "Plinth (ScriptableObject table)",
+  "displayName": "Plinth (Object table)",
   "version": "1.0.0",
-  "description": "Editor plugin that lets you edit many Scriptable Objects all at once, like a table / spreadsheet.",
+  "description": "Editor plugin that lets you edit many Prefabs / Scriptable Objects all at once, like a table / spreadsheet.",
   "unity": "2020.1",
-  "keywords": [ "scriptable object", "table", "spreadsheet", "tool" ],
+  "keywords": [ "scriptable object", "prefab", "table", "spreadsheet", "tool" ],
   "documentationUrl": "https://github.com/radiatoryang/plinth",
   "licensesUrl": "https://github.com/radiatoryang/plinth/LICENSE",
   "author": {
