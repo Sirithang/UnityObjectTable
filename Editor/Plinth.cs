@@ -428,7 +428,7 @@ public class DatabaseDisplayer : TreeView
         float height = 0;
         var item = (DatabaseViewerItem)treeItem;
         for(int i=0; i<item.properties.Length; i++) {
-            float newHeight = EditorGUI.GetPropertyHeight(item.properties[i], item.properties[i].isArray && item.properties[i].isExpanded);
+            float newHeight = EditorGUI.GetPropertyHeight(item.properties[i], item.properties[i].isExpanded);
             height = Mathf.Max(height, newHeight);
         }
         return height;
